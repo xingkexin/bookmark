@@ -63,7 +63,10 @@ public class IndexWeb {
 			Map<String, Object> model = new HashMap<>();
 			model.put("text", mark.getName());
 			if(mark.getChildList().size() > 0) {
+				model.put("tags", new String[] {mark.getChildList().size() + ""});
 				model.put("nodes", genChild(mark.getChildList()));
+			}else {
+				model.put("href", mark.getUrl());
 			}
 			list.add(model);
 		}

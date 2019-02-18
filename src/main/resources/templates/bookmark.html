@@ -6,57 +6,43 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" th:href="@{/static/plugins//bootstrap/3.4.1/css/bootstrap.min.css}">
 		<link rel="stylesheet" th:href="@{/static/plugins/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css}">
 
-		<title>Hello, world!</title>
+		<title>网站书签</title>
 	</head>
 	<body>
 		<div class="container">
 			<!-- Content here -->
-			<div class="row">
-				<div class="col">
-					<div class="list-group">
-						<button type="button" class="list-group-item list-group-item-action" th:each="bookmark:${bookmarkList}" th:text="${bookmark.name}">
-						</button>
-					</div>
-				</div>
-				<div class="col">
-					<div class="list-group">
-						<a href="#" class="list-group-item list-group-item-action" th:each="bookmark:${bookmarkList}" th:href="${bookmark.url} == null? '#': '${bookmark.url}'">
-							<span th:text="${bookmark.name}"></span>
 
-							<div class="list-group" th:if="${#lists.size(bookmark.childList)} gt 0">
-								<a href="#" class="list-group-item list-group-item-action" th:each="child:${bookmark.childList}" th:href="${child.url} == null? '#': ${child.url}">
-									<span th:text="${child.name}"></span>
-								</a>
-							</div>
-						</a>
-					</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<h2>所有书签</h2>
+					<div id="treeview1" class=""></div>
 				</div>
 			</div>
-			<div id="tree"></div>
-			
-		      <div class="row">
-		        <div class="col-sm-4">
-		          <h2>Default</h2>
-		          <div id="treeview1" class=""></div>
-		        </div>
-		      </div>
 		</div>
 
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 		<script th:src="@{/static/plugins/jquery/3.3.1/jquery.min.js}"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script th:src="@{/static/plugins/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
 		<script th:src="@{/static/plugins/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js}"></script>
 
 		<script>
-			$(function(){
-				$.ajax({"url": "/getBookmarkTree2", "async": "false", "success": function(json) {
-					$('#treeview1').treeview({data: json});
-				}});
+			$(function() {
+				$.ajax({
+					"url": "/getBookmarkTree2",
+					"async": "false",
+					"success": function(json) {
+						$('#treeview1').treeview({
+							enableLinks: true,
+							showTags: true,
+							data: json
+						});
+					}
+				});
 			})
 		</script>
 	</body>
