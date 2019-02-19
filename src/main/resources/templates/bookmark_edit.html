@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- zTree CSS -->
+		<link rel="stylesheet" th:href="@{/static/plugins/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+		<!-- <link rel="stylesheet" th:href="@{/static/plugins/zTree_v3/css/awesomeStyle/awesome.css}"> -->
+		<!-- <link rel="stylesheet" th:href="@{/static/plugins/zTree_v3/css/metroStyle/metroStyle.css}"> -->
+
+		<title>网站书签-编辑</title>
+	</head>
+	<body>
+		<div class="container">
+			<!-- Content here -->
+			<a th:href="@{/bookmark}">查看</a>
+			<div class="row">
+				<div class="col-sm-4">
+					<h2>所有书签</h2>
+					<div id="tree_edit" class="ztree"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script th:src="@{/static/plugins/jquery/3.3.1/jquery.min.js}"></script>
+		<script th:src="@{/static/plugins/zTree_v3/js/jquery.ztree.all.js}"></script>
+
+		<script>
+			var zTreeObj;
+			var setting = {
+				edit: {
+					enable: true,
+					showRemoveBtn: true,
+					showRenameBtn: true,
+					removeTitle: "删除",
+					renameTitle: "修改"
+				},
+				data: {
+					simpleData: {
+						enable: true
+					}
+				},
+				callback: {
+					beforeDrag: beforeDrag,
+					beforeDrop: beforeDrop
+				}
+			};
+			
+			function beforeDrag(treeId, treeNodes) {
+				for (var i=0,l=treeNodes.length; i<l; i++) {
+					if (treeNodes[i].drag === false) {
+						return false;
+					}
+				}
+				return true;
+			}
+			function beforeDrop(treeId, treeNodes, targetNode, moveType) {
+				return targetNode ? targetNode.drop !== false : true;
+			}
+			
+			$(function() {
+				$.ajax({
+					"url": "/getBookmarkByZtree",
+					"success": function(json) {
+						zTreeObj = $.fn.zTree.init($("#tree_edit"), setting, json);
+					}
+				});
+			})
+		</script>
+	</body>
+</html>

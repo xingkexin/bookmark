@@ -18,7 +18,7 @@ public class IndexWeb {
 	@Autowired
 	private BookmarkService bookmarkService;
 
-	@RequestMapping("/")
+	@RequestMapping(value = {"/", "/bookmark"})
 	public ModelAndView index() {
 		Map<String, Object> model = new HashMap<>();
 		Long userId = 1L;
@@ -28,45 +28,57 @@ public class IndexWeb {
 		return new ModelAndView("bookmark", model);
 	}
 
-	@RequestMapping("/demo")
-	public ModelAndView demo() {
+	@RequestMapping("/bookmark/edit")
+	public ModelAndView toBookmarkEdit() {
 		Map<String, Object> model = new HashMap<>();
 		Long userId = 1L;
 		Integer treeLevel = 1;
 		List<Bookmark> bookmarkList = bookmarkService.findByUserIdAndTreeLevel(userId, treeLevel);
 		model.put("bookmarkList", bookmarkList);
-		return new ModelAndView("tree-demo", model);
+		return new ModelAndView("bookmark_edit", model);
 	}
 
-	@RequestMapping("getBookmarkTree")
-	public Map<String, Object> getBookmarkTree() {
-		Map<String, Object> model = new HashMap<>();
+	@RequestMapping("getBookmarkByTreeview")
+	public List<Map<String, Object>> getBookmarkByTreeview() {
 		Long userId = 1L;
 		Integer treeLevel = 1;
 		List<Bookmark> bookmarkList = bookmarkService.findByUserIdAndTreeLevel(userId, treeLevel);
-		model.put("text", "根节点");
-		model.put("nodes", genChild(bookmarkList));
-		return model;
-	}
-
-	@RequestMapping("getBookmarkTree2")
-	public List<Map<String, Object>> getBookmarkTree2() {
-		Long userId = 1L;
-		Integer treeLevel = 1;
-		List<Bookmark> bookmarkList = bookmarkService.findByUserIdAndTreeLevel(userId, treeLevel);
-		return genChild(bookmarkList);
+		return genChildByTreeview(bookmarkList);
 	}
 	
-	private List<Map<String, Object>> genChild(List<Bookmark> bookmarkList) {
+	private List<Map<String, Object>> genChildByTreeview(List<Bookmark> bookmarkList) {
 		List<Map<String, Object>> list = new ArrayList<>();
 		for(Bookmark mark : bookmarkList) {
 			Map<String, Object> model = new HashMap<>();
 			model.put("text", mark.getName());
 			if(mark.getChildList().size() > 0) {
 				model.put("tags", new String[] {mark.getChildList().size() + ""});
-				model.put("nodes", genChild(mark.getChildList()));
+				model.put("nodes", genChildByTreeview(mark.getChildList()));
 			}else {
 				model.put("href", mark.getUrl());
+			}
+			list.add(model);
+		}
+		return list;
+	}
+
+	@RequestMapping("getBookmarkByZtree")
+	public List<Map<String, Object>> getBookmarkByZtree() {
+		Long userId = 1L;
+		Integer treeLevel = 1;
+		List<Bookmark> bookmarkList = bookmarkService.findByUserIdAndTreeLevel(userId, treeLevel);
+		return genChildByZtree(bookmarkList);
+	}
+	
+	private List<Map<String, Object>> genChildByZtree(List<Bookmark> bookmarkList) {
+		List<Map<String, Object>> list = new ArrayList<>();
+		for(Bookmark mark : bookmarkList) {
+			Map<String, Object> model = new HashMap<>();
+			model.put("id", mark.getId());
+			model.put("pId", mark.getParentId());
+			model.put("name", mark.getName());
+			if(mark.getChildList().size() > 0) {
+				model.put("children", genChildByZtree(mark.getChildList()));
 			}
 			list.add(model);
 		}
